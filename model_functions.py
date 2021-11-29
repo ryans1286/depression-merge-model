@@ -1,3 +1,4 @@
+#Import shapely tools
 from shapely import geometry
 from shapely.geometry import Point, Polygon
 from shapely.ops import unary_union
@@ -6,8 +7,6 @@ from shapely.ops import unary_union
 import scipy
 import numpy as np
 
-
-#Imports required to write model data
 
 
 """ALL FUNCTIONS MUST BE TESTED BEFORE PLACING IN THIS FILE!"""
