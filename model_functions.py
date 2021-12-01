@@ -110,8 +110,8 @@ Inputs:
 
 Returns: 
         Function returns buffer value to increase shape area such that it 
-        satisfies the differential equation above. Minimization follows bisection
-        method.
+        satisfies the differential equation above. Minimization uses 
+        scipy.optimize.root. This method is faster than bisect
 
 Dependencies:
         This function runs within the grow_depressions function.
@@ -120,7 +120,8 @@ c*dt needs to be small such that the dA is 'small' between timesteps
 """
 def scale_to_buffer(shape, scale_factor, c, dt):
     a_next = c * dt * shape.area**scale_factor + shape.area
-    return scipy.optimize.bisect(a_diff, -1., 10, args = (shape, a_next))
+    sol = scipy.optimize.root(a_diff, [0], args = (shape, a_next))
+    return sol.x[0]
 
 
 """
@@ -156,7 +157,7 @@ def grow_depressions(shapes, scale_factor, c, dt):
     #Convert list of polygons to class Shapely geometry MultiPolygons
     polys = geometry.MultiPolygon(shapes)
     #Create an array of buffers for depression growth
-    bufferArray = np.array([scale_to_buffer(polys, scale_factor, c, dt) for i in range(len(polys))])
+    bufferArray = np.array([scale_to_buffer(p, scale_factor, c, dt) for p in polys])
     #Increase depression areas using the buffer array
     scaledShapes = [Polygon(polys[k]).buffer(bufferArray[k]) for k in range(len(polys))]
     return scaledShapes
